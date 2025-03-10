@@ -111,3 +111,86 @@ def obter_porcoes():
             fechar_conexao(pgconn, pgcursor)
         return porcoes
     return []
+
+def obter_refeicao(id_refeicao):
+    """Obtém uma refeição e suas porções associadas pelo ID."""
+    pgconn = conexao_banco()
+    if pgconn:
+        try:
+            pgcursor = pgconn.cursor()
+
+            # Obter a refeição com base no ID
+            query_refeicao = """
+                SELECT r.id, r.dia, r.refeicao, r.ingredientes
+                FROM tb_refeicao r
+                WHERE r.id = %s
+            """
+            pgcursor.execute(query_refeicao, (id_refeicao,))
+            refeicao = pgcursor.fetchone()
+
+            # Verifica se a refeição foi encontrada
+            if refeicao is None:
+                return None,[]
+            
+
+            # Obter as porções associadas à refeição
+            query_porcoes = """
+                SELECT p.porcao
+                FROM tb_refeicao_porcao rp
+                JOIN tb_porcao p ON rp.id_porcao = p.id
+                WHERE rp.id_refeicao = %s
+            """
+            pgcursor.execute(query_porcoes, (id_refeicao,))
+            porcoes = pgcursor.fetchall()
+
+            return refeicao, [porcao[0] for porcao in porcoes]
+
+        except Exception as e:
+            print(f"Erro ao obter refeição por ID: {e}")
+            return None, []
+        finally:
+            fechar_conexao(pgconn, pgcursor)
+    return None, []
+
+def atualizar_refeicao(id_refeicao, dia, nome_refeicao, ingredientes, porcoes):
+    pgconn = conexao_banco()
+    if pgconn:
+        try:
+            pgcursor = pgconn.cursor()
+
+            query_atualizacao = """
+                                    UPDATE tb_refeicao
+                                    SET dia = %s, refeicao = %s, ingredientes = %s
+                                    WHERE id = %s
+                                """
+            pgcursor.execute(query_atualizacao, (dia, nome_refeicao, ingredientes, id_refeicao))
+
+            query_deletar = """
+                                DELETE FROM tb_refeicao_porcao WHERE id_refeicao = %s
+                            """
+            pgcursor.execute(query_deletar, (id_refeicao))
+
+            print(f"Tipo de porcoes: {type(porcoes)}, Valor de porcoes: {porcoes}")
+
+
+            if not isinstance(porcoes, list):
+                porcoes = [porcoes]
+
+            # Inserir as novas porções
+            for id_porcao in porcoes:
+                query_inserir = """
+                                    INSERT INTO tb_refeicao_porcao (id_refeicao, id_porcao)
+                                    VALUES (%s, %s)
+                                """
+                pgcursor.execute(query_inserir, (id_refeicao, id_porcao))
+            
+            pgconn.commit()
+            return True
+        except Exception as e:
+            print(f"Erro ao atualizar a refeição: {e}")
+            return False
+        finally:
+            fechar_conexao(pgconn, pgcursor)
+    return False
+
+
