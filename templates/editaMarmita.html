@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Editar Marmita</title>
+</head>
+
+<body>
+
+    <nav class="navbar" style="background-color: #e7e7e7;">
+        <div class="container-fluid d-flex justify-content-between">
+            <div class="d-flex">
+                <button class="btn btn-success me-2 px-4" type="button">Estoque</button>
+                <button class="btn btn-success me-2 px-4" type="button">Lista de compras</button>
+                <div class="dropdown">
+                    <button class="btn btn-success me-2 dropdown-toggle px-4" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Páginas
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/marmitas">Organização Marmitas</a></li>
+                        <li><a class="dropdown-item" href="/cadastroRefeicao">Cadastros Marmitas</a></li>
+                    </ul>
+                </div>
+            </div>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Pesquisar" aria-label="Search">
+                <button class="btn btn-success px-4" type="submit">Pesquisar</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="bg-image d-flex justify-content-center align-items-center vh-100"
+        style="background-image: url('/static/fundo-cadastro.png'); background-size: cover; background-position: center;">
+
+        <div class="container">
+            <div class="card rounded-4 bg-white bg-opacity-75 shadow p-4">
+                <h2 class="text-center">Editar Refeição</h2>
+                <form action="/editaMarmita/{{ refeicao[0] }}" method="POST">
+                    
+                    <!-- Seleção do dia da semana -->
+                    <h5 class="mt-3 text-secondary">Selecione o dia da Semana</h5>
+                    <select class="form-select" name="dia" required>
+                        <option value="1" {% if refeicao[1] == "Segunda-feira" %}selected{% endif %}>Segunda-Feira</option>
+                        <option value="2" {% if refeicao[1] == "Terça-feira" %}selected{% endif %}>Terça-Feira</option>
+                        <option value="3" {% if refeicao[1] == "Quarta-feira" %}selected{% endif %}>Quarta-Feira</option>
+                        <option value="4" {% if refeicao[1] == "Quinta-feira" %}selected{% endif %}>Quinta-Feira</option>
+                        <option value="5" {% if refeicao[1] == "Sexta-feira" %}selected{% endif %}>Sexta-Feira</option>
+                        <option value="6" {% if refeicao[1] == "Sábado" %}selected{% endif %}>Sábado</option>
+                        <option value="7" {% if refeicao[1] == "Domingo" %}selected{% endif %}>Domingo</option>
+                    </select>
+
+                    <!-- Nome da refeição -->
+                    <h5 class="mt-3 text-secondary">Nome da Refeição</h5>
+                    <input type="text" class="form-control" name="nome_refeicao" 
+                        value="{{ refeicao[2] }}" required>
+
+                    <!-- Ingredientes -->
+                    <h5 class="mt-3 text-secondary">Ingredientes</h5>
+                    <input type="text" class="form-control" name="ingredientes" 
+                        value="{{ refeicao[3] }}" required>
+
+                    <!-- Seleção das porções -->
+                    <h5 class="mt-3 text-secondary">Porções</h5>
+                    {% for id_porcao, nome_porcao in porcoes %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="porcoes" value="{{ id_porcao }}"
+                                id="porcao{{ id_porcao }}" {% if nome_porcao in porcoes_selecionadas %}checked{% endif %}>
+                            <label class="form-check-label" for="porcao{{ id_porcao }}">
+                                {{ nome_porcao }}
+                            </label>
+                        </div>
+                    {% endfor %}
+
+                    <!-- Botão de salvar -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                        <button type="submit" class="btn btn-success w-25">Salvar Alterações</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+</body>
+
+</html>

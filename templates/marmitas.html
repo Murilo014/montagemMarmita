@@ -52,10 +52,10 @@
             {% if refeicoes %}
               {% for refeicao in refeicoes %}
                 <tr>
-                  <td>{{ refeicao[1] }}</td> <!-- Dia da semana -->
-                  <td>{{ refeicao[2] }}</td> <!-- Nome da refeição -->
-                  <td>{{ refeicao[3] }}</td> <!-- Ingredientes -->
-                  <td>{{ refeicao[4] }}</td> <!-- Tipos de porção (Almoço, Janta) -->
+                  <td><a href="{{ url_for('edita_marmitas', id_refeicao=refeicao[0]) }}">{{ refeicao[1] }}</a></td>
+                  <td>{{ refeicao[2] }}</td> 
+                  <td>{{ refeicao[3] }}</td> 
+                  <td>{{ refeicao[4] }}</td> 
                 </tr>
               {% endfor %}
             {% else %}
