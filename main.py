@@ -75,7 +75,7 @@ def edita_marmitas(id_refeicao):
         }
         dia = dias_da_semana.get(numero_dia, "Dia inválido")
 
-        # 🔍 Normalizar `porcoes` para garantir que seja uma lista de inteiros
+        # Normalizar `porcoes` para garantir que seja uma lista de inteiros
         if isinstance(porcoes, str):
             porcoes = [int(porcoes)]  # Se for uma string única, transforma em lista
         elif isinstance(porcoes, list):
