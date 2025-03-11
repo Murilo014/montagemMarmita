@@ -129,13 +129,13 @@ def obter_refeicao(id_refeicao):
             refeicao = pgcursor.fetchone()
 
             # Verifica se a refeição foi encontrada
-            if refeicao is None:
+            if not refeicao:
                 return None,[]
             
 
             # Obter as porções associadas à refeição
             query_porcoes = """
-                SELECT p.porcao
+                SELECT p.id, p.porcao
                 FROM tb_refeicao_porcao rp
                 JOIN tb_porcao p ON rp.id_porcao = p.id
                 WHERE rp.id_refeicao = %s
@@ -143,7 +143,7 @@ def obter_refeicao(id_refeicao):
             pgcursor.execute(query_porcoes, (id_refeicao,))
             porcoes = pgcursor.fetchall()
 
-            return refeicao, [porcao[0] for porcao in porcoes]
+            return refeicao, [(p[0], p[1]) for p in porcoes]
 
         except Exception as e:
             print(f"Erro ao obter refeição por ID: {e}")

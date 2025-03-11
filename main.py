@@ -57,11 +57,10 @@ def cadastro_marmitas():
 @app.route("/editaMarmita/<int:id_refeicao>", methods=["GET", "POST"])
 def edita_marmitas(id_refeicao):
     if request.method == "POST":
-        # Obtendo dados do formulário
         numero_dia = request.form.get("dia")
         nome_refeicao = request.form.get("nome_refeicao")
         ingredientes = request.form.get("ingredientes")
-        porcoes = request.form.getlist("porcoes")  # Pode vir como lista de strings
+        porcoes = request.form.getlist("porcoes")
 
         # Mapeamento dos dias da semana
         dias_da_semana = {
@@ -75,48 +74,41 @@ def edita_marmitas(id_refeicao):
         }
         dia = dias_da_semana.get(numero_dia, "Dia inválido")
 
-        # Normalizar `porcoes` para garantir que seja uma lista de inteiros
-        if isinstance(porcoes, str):
-            porcoes = [int(porcoes)]  # Se for uma string única, transforma em lista
-        elif isinstance(porcoes, list):
-            porcoes = [int(p) for p in porcoes if p.isdigit()]  # Converte strings para inteiros
-        else:
-            porcoes = []  # Garante que sempre seja uma lista válida
+        # Normalizar porções
+        porcoes = [int(p) for p in porcoes if p.isdigit()]
 
-        print(f"Porções recebidas: {porcoes}")  # 🔍 Depuração para verificar
-
-        # Atualizar refeição no banco de dados
         sucesso = atualizar_refeicao(id_refeicao, dia, nome_refeicao, ingredientes, porcoes)
         if sucesso:
-            return render_template("editaMarmita.html")  # Redireciona para a página de edição
+            return redirect(url_for("marmitas"))  # 🔹 Agora redireciona corretamente
         else:
             return "Erro ao atualizar refeição."
 
-    # Se for um GET, carrega os dados da refeição para edição
+    # 🔹 Buscar refeição e tratar caso não exista
     refeicao, porcoes_selecionadas = obter_refeicao(id_refeicao)
 
-    if refeicao:
-        dias_da_semana = [
-            ("1", "Segunda-feira"),
-            ("2", "Terça-feira"),
-            ("3", "Quarta-feira"),
-            ("4", "Quinta-feira"),
-            ("5", "Sexta-feira"),
-            ("6", "Sábado"),
-            ("7", "Domingo")
-        ]
-        
-        # 🔍 Busca porções disponíveis no banco
-        porcoes = obter_porcoes()  # Certifique-se que `obter_porcoes` retorna [(id, nome), ...]
+    if refeicao is None:
+        return "Refeição não encontrada", 404  # Evita erro no template
 
-        return render_template(
-            "editaMarmita.html",
-            refeicao=refeicao,
-            porcoes=porcoes,
-            porcoes_selecionadas=porcoes_selecionadas
-        )
-    else:
-        return "Refeição não encontrada."
+    dias_da_semana = [
+        ("1", "Segunda-feira"),
+        ("2", "Terça-feira"),
+        ("3", "Quarta-feira"),
+        ("4", "Quinta-feira"),
+        ("5", "Sexta-feira"),
+        ("6", "Sábado"),
+        ("7", "Domingo")
+    ]
+    
+    # Buscar todas as porções disponíveis
+    porcoes = obter_porcoes()
+
+    return render_template(
+        "editaMarmita.html",
+        refeicao=refeicao,
+        porcoes=porcoes,
+        porcoes_selecionadas=porcoes_selecionadas
+    )
+
 
 
 if __name__ == "__main__":
