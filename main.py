@@ -77,6 +77,28 @@ def edita_marmitas(id_refeicao):
                                refeicao=refeicao,
                                porcoes_associadas=porcoes_associadas,
                                todas_porcoes=todas_porcoes)
+    
+    if request.method == 'POST':
+        dia = request.form.get("dia")
+        nome_refeicao = request.form.get("nome_refeicao")
+        ingredientes = request.form.get("ingredientes")
+
+        dias_semana = {
+            '1':'Segunda-feira',
+            '2':'Terça-feira',
+            '3':'Quarta-feira',
+            '4':'Quinta-feira',
+            '5':'Sexta-feira',
+            '6':'Sábado',
+            '7':'Domingo'
+        }
+        nome_dia = dias_semana.get(dia)
+
+        porcoes_selecionadas = request.form.getlist("porcoes")
+
+        atualizar_refeicao(id_refeicao, nome_dia, nome_refeicao, ingredientes, porcoes_selecionadas)
+
+        return redirect(url_for('marmitas'))
 
 if __name__ == "__main__":
     app.run(debug=True)
