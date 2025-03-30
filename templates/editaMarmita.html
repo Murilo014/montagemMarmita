@@ -39,50 +39,46 @@
 
         <div class="container">
             <div class="card rounded-4 bg-white bg-opacity-75 shadow p-4">
-                <h2 class="text-center">Editar Refeição</h2>
-                
-                <form action="/editaMarmita/{{ refeicao[0] }}" method="POST">
-                    
-                    <!-- Seleção do dia da semana -->
-                    <h5 class="mt-3 text-secondary">Selecione o dia da Semana</h5>
+                <h2 class="text-center">Editar Marmita</h2>
+                <form action="/editaMarmita/{{ id_refeicao }}" method="POST">
+                    <h5 class="mt-3 text-secondary">Selecione os dias da Semana</h5>
                     <select class="form-select" name="dia" required>
-                        <option value="1" {% if refeicao[1] == "Segunda-feira" %}selected{% endif %}>Segunda-Feira</option>
-                        <option value="2" {% if refeicao[1] == "Terça-feira" %}selected{% endif %}>Terça-Feira</option>
-                        <option value="3" {% if refeicao[1] == "Quarta-feira" %}selected{% endif %}>Quarta-Feira</option>
-                        <option value="4" {% if refeicao[1] == "Quinta-feira" %}selected{% endif %}>Quinta-Feira</option>
-                        <option value="5" {% if refeicao[1] == "Sexta-feira" %}selected{% endif %}>Sexta-Feira</option>
-                        <option value="6" {% if refeicao[1] == "Sábado" %}selected{% endif %}>Sábado</option>
-                        <option value="7" {% if refeicao[1] == "Domingo" %}selected{% endif %}>Domingo</option>
+                        <option value="1" {% if dia == 'Segunda-feira' %}selected{% endif %}>Segunda-Feira</option>
+                        <option value="2" {% if dia == 'Terça-feira' %}selected{% endif %}>Terça-Feira</option>
+                        <option value="3" {% if dia == 'Quarta-feira' %}selected{% endif %}>Quarta-Feira</option>
+                        <option value="4" {% if dia == 'Quinta-feira' %}selected{% endif %}>Quinta-Feira</option>
+                        <option value="5" {% if dia == 'Sexta-feira' %}selected{% endif %}>Sexta-Feira</option>
+                        <option value="6" {% if dia == 'Sábado' %}selected{% endif %}>Sábado</option>
+                        <option value="7" {% if dia == 'Domingo' %}selected{% endif %}>Domingo</option>
                     </select>
 
-                    <!-- Nome da refeição -->
                     <h5 class="mt-3 text-secondary">Nome da Refeição</h5>
-                    <input type="text" class="form-control" name="nome_refeicao" 
-                        value="{{ refeicao[2] }}" required>
+                    <input type="text" class="form-control" name="nome_refeicao" value="{{ nome_refeicao }}" required>
 
-                    <!-- Ingredientes -->
                     <h5 class="mt-3 text-secondary">Ingredientes</h5>
-                    <input type="text" class="form-control" name="ingredientes" 
-                        value="{{ refeicao[3] }}" required>
+                    <input type="text" class="form-control" name="ingredientes" value="{{ ingredientes }}" required>
 
-                    <!-- Seleção das porções -->
                     <h5 class="mt-3 text-secondary">Porções</h5>
-                    {% for id_porcao, nome_porcao in porcoes %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="porcoes" value="{{ id_porcao }}"
-                                id="porcao{{ id_porcao }}" {% if nome_porcao in porcoes_selecionadas %}checked{% endif %}>
-                            <label class="form-check-label" for="porcao{{ id_porcao }}">
-                                {{ nome_porcao }}
-                            </label>
-                        </div>
-                    {% endfor %}
-
-                    <!-- Botão de salvar -->
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
-                        <button type="submit" class="btn btn-success w-25">Salvar Alterações</button>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="porcoes" value="1" id="porcao1" 
+                            {% if 'Almoço' in porcoes %}checked{% endif %}>
+                        <label class="form-check-label" for="porcao1">
+                            Almoço
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="porcoes" value="2" id="porcao2"
+                            {% if 'Janta' in porcoes %}checked{% endif %}>
+                        <label class="form-check-label" for="porcao2">
+                            Janta
+                        </label>
                     </div>
 
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                        <button type="submit" class="btn btn-success w-25">Salvar</button>
+                    </div>
                 </form>
+
             </div>
         </div>
 
