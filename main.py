@@ -56,17 +56,28 @@ def cadastro_marmitas():
 
 @app.route("/editaMarmita/<int:id_refeicao>", methods=["GET", "POST"])
 def edita_marmitas(id_refeicao):
-    refeicao, porcoes = obter_refeicao(id_refeicao)
-    if refeicao:
-        # Passando cada valor explicitamente para o template
-        return render_template("editaMarmita.html", 
-                               id_refeicao=refeicao[0], 
-                               dia=refeicao[1], 
-                               nome_refeicao=refeicao[2], 
-                               ingredientes=refeicao[3],
-                               porcoes=porcoes)
-    return "Refeição não encontrada", 404
+    
+    if request.method == 'GET':
+        refeicao, porcoes_associadas = obter_refeicao(id_refeicao)
 
+        if refeicao is None:
+            return "Refeição não encontrada", 404
+        
+        dia = refeicao[1]
+        nome_refeicao = refeicao[2]
+        ingredientes = refeicao[3]
+
+        todas_porcoes = obter_porcoes()
+        
+        return render_template('editaMarmita.html',
+                               id_refeicao=refeicao[0],
+                               dia=dia,
+                               nome_refeicao=nome_refeicao,
+                               ingredientes=ingredientes,
+                               refeicao=refeicao,
+                               porcoes_associadas=porcoes_associadas,
+                               todas_porcoes=todas_porcoes)
 
 if __name__ == "__main__":
     app.run(debug=True)
+
