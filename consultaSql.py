@@ -132,18 +132,19 @@ def obter_refeicao(id_refeicao):
             if not refeicao:
                 return None,[]
             
-
+            id_refeicao, dia, refeicao, ingredientes = refeicao 
+        
             # Obter as porções associadas à refeição
             query_porcoes = """
-                SELECT p.id, p.porcao
-                FROM tb_refeicao_porcao rp
-                JOIN tb_porcao p ON rp.id_porcao = p.id
-                WHERE rp.id_refeicao = %s
-            """
+                                SELECT p.id
+                                FROM tb_refeicao_porcao rp
+                                JOIN tb_porcao p ON rp.id_porcao = p.id
+                                WHERE rp.id_refeicao = %s
+                            """
             pgcursor.execute(query_porcoes, (id_refeicao,))
-            porcoes = pgcursor.fetchall()
+            porcoes = [p[0] for p in pgcursor.fetchall()]
 
-            return refeicao, [(p[0], p[1]) for p in porcoes]
+            return (id_refeicao, dia, refeicao, ingredientes), porcoes
 
         except Exception as e:
             print(f"Erro ao obter refeição por ID: {e}")
@@ -173,8 +174,9 @@ def atualizar_refeicao(id_refeicao, dia, nome_refeicao, ingredientes, porcoes):
             print(f"Tipo de porcoes: {type(porcoes)}, Valor de porcoes: {porcoes}")
 
 
-            if not isinstance(porcoes, list):
-                porcoes = [porcoes]
+            print(f"Tipo de porções após conversão: {porcoes}, Valor: {porcoes}")
+
+            porcoes = [(p) for p in porcoes]
 
             # Inserir as novas porções
             for id_porcao in porcoes:
@@ -192,5 +194,27 @@ def atualizar_refeicao(id_refeicao, dia, nome_refeicao, ingredientes, porcoes):
         finally:
             fechar_conexao(pgconn, pgcursor)
     return False
+
+def buscar_refeicao_id(id_refeicao):
+    pgconn = conexao_banco()
+    if pgconn:
+        try:
+            pgcursor = pgconn.cursor()
+            query = """
+                SELECT id, dia, refeicao, ingredientes 
+                FROM tb_refeicao WHERE id = %s
+            """
+            pgcursor.execute(query, (id_refeicao,))
+            refeicao = pgcursor.fetchone()
+            return refeicao
+        except Exception as e:
+            print(f"Erro ao obter refeição por ID: {e}")
+            return None
+        finally:
+            fechar_conexao(pgconn, pgcursor)
+    return None
+    
+
+
 
 
