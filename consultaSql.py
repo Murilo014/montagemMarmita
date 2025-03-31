@@ -65,6 +65,7 @@ def listar_refeicao():
             query_refeicao = """
                 SELECT r.id, r.dia, r.refeicao, r.ingredientes
                 FROM tb_refeicao r
+                ORDER BY r.id
             """
             pgcursor.execute(query_refeicao)
             refeicoes = pgcursor.fetchall()
@@ -130,21 +131,22 @@ def obter_refeicao(id_refeicao):
 
             # Verifica se a refeição foi encontrada
             if not refeicao:
-                return None,[]
-            
-            id_refeicao, dia, refeicao, ingredientes = refeicao 
-        
+                return None, []
+
+            # Renomeando variável para evitar conflito
+            id_ref, dia, nome_refeicao, ingredientes = refeicao  
+
             # Obter as porções associadas à refeição
             query_porcoes = """
-                                SELECT p.id
-                                FROM tb_refeicao_porcao rp
-                                JOIN tb_porcao p ON rp.id_porcao = p.id
-                                WHERE rp.id_refeicao = %s
-                            """
-            pgcursor.execute(query_porcoes, (id_refeicao,))
+                SELECT p.id
+                FROM tb_refeicao_porcao rp
+                JOIN tb_porcao p ON rp.id_porcao = p.id
+                WHERE rp.id_refeicao = %s
+            """
+            pgcursor.execute(query_porcoes, (id_ref,))
             porcoes = [p[0] for p in pgcursor.fetchall()]
 
-            return (id_refeicao, dia, refeicao, ingredientes), porcoes
+            return (id_ref, dia, nome_refeicao, ingredientes), porcoes
 
         except Exception as e:
             print(f"Erro ao obter refeição por ID: {e}")
@@ -153,6 +155,7 @@ def obter_refeicao(id_refeicao):
             fechar_conexao(pgconn, pgcursor)
     return None, []
 
+
 def atualizar_refeicao(id_refeicao, dia, nome_refeicao, ingredientes, porcoes):
     pgconn = conexao_banco()
     if pgconn:
@@ -160,30 +163,25 @@ def atualizar_refeicao(id_refeicao, dia, nome_refeicao, ingredientes, porcoes):
             pgcursor = pgconn.cursor()
 
             query_atualizacao = """
-                                    UPDATE tb_refeicao
-                                    SET dia = %s, refeicao = %s, ingredientes = %s
-                                    WHERE id = %s
-                                """
+                UPDATE tb_refeicao
+                SET dia = %s, refeicao = %s, ingredientes = %s
+                WHERE id = %s
+            """
             pgcursor.execute(query_atualizacao, (dia, nome_refeicao, ingredientes, id_refeicao))
 
-            query_deletar = """
-                                DELETE FROM tb_refeicao_porcao WHERE id_refeicao = %s
-                            """
-            pgcursor.execute(query_deletar, (id_refeicao))
+            # Removendo todas as porções associadas à refeição
+            query_deletar = "DELETE FROM tb_refeicao_porcao WHERE id_refeicao = %s"
+            pgcursor.execute(query_deletar, (id_refeicao,))
 
-            print(f"Tipo de porcoes: {type(porcoes)}, Valor de porcoes: {porcoes}")
-
-
-            print(f"Tipo de porções após conversão: {porcoes}, Valor: {porcoes}")
-
-            porcoes = [(p) for p in porcoes]
+            # Certificando que porcoes é uma lista de inteiros
+            porcoes = [int(p) for p in porcoes] if porcoes else []
 
             # Inserir as novas porções
             for id_porcao in porcoes:
                 query_inserir = """
-                                    INSERT INTO tb_refeicao_porcao (id_refeicao, id_porcao)
-                                    VALUES (%s, %s)
-                                """
+                    INSERT INTO tb_refeicao_porcao (id_refeicao, id_porcao)
+                    VALUES (%s, %s)
+                """
                 pgcursor.execute(query_inserir, (id_refeicao, id_porcao))
             
             pgconn.commit()
@@ -194,6 +192,7 @@ def atualizar_refeicao(id_refeicao, dia, nome_refeicao, ingredientes, porcoes):
         finally:
             fechar_conexao(pgconn, pgcursor)
     return False
+
 
 def buscar_refeicao_id(id_refeicao):
     pgconn = conexao_banco()
