@@ -1,0 +1,11 @@
+td .delete-btn {
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+td .delete-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
